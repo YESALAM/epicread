@@ -50,7 +50,10 @@ if part_no == -1 :
 else:
     helpers.downloadPdf(str(part_no),assembly_value,district_value,session)
 
-
+pdf_path = os.path.join('data','pdfs')
+districts = os.listdir(pdf_path)
+for district in districts:
+    
 
 
 
