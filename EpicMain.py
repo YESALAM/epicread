@@ -2,6 +2,16 @@ import os,errno
 import requests
 import helpers
 from bs4 import BeautifulSoup
+import MySQLdb
+import ReadPdf
+import searchepic
+import db_conn
+
+db = db_conn.getConnection()
+cur = db_conn.getCursor(db)
+
+db2 = db_conn.getConnection()
+cur2 = db_conn.getCursor(db2)
 
 home_url = 'http://ceomadhyapradesh.nic.in/VoterlistSR2017.aspx'
 session = requests.Session()
@@ -52,9 +62,22 @@ else:
 
 pdf_path = os.path.join('data','pdfs')
 districts = os.listdir(pdf_path)
+cwd = os.getcwd()
 for district in districts:
-    
+    print(district.title())
+    district_path = os.path.join(cwd,pdf_path,district.title())
+    assemblies = os.listdir(district_path)
+    for assembly in assemblies:
+        print(assembly.title())
+        assembly_path = os.path.join(district_path,assembly.title())
+        parts = os.listdir(assembly_path)
+        for part in parts:
+            file_path = os.path.join(assembly_path,part.title().lower())
+            if os.path.isfile(file_path):
+                ReadPdf.saveEpic(file_path,district.title(),cur)
+                db.commit()
 
 
 
+searchepic.updateEPICData(cur,cur2,db2)
 

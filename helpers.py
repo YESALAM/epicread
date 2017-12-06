@@ -48,7 +48,10 @@ def getPayload(soupObj):
 
     for input in inputs:
         attr = input.attrs
-        payload[attr['name']] = attr['value']
+        try:
+            payload[attr['name']] = attr['value']
+        except KeyError:
+            payload[attr['name']] = ''
 
     return payload
 
