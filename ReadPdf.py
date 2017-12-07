@@ -66,6 +66,11 @@ def readPdfs(cur,db):
                 if os.path.isfile(file_path):
                     saveEpic(file_path, district.title(), cur)
                     db.commit()
+                    deletePdf(file_path)
+
+def deletePdf(file_path):
+    os.remove(file_path)
+
 
 if __name__ == "__main__":
     db = db_conn.getConnection()
