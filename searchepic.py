@@ -1,6 +1,7 @@
 import requests
 import helpers
 from bs4 import BeautifulSoup
+import db_conn
 
 def searchEPIC(district,epicno):
     search_home = "http://164.100.196.163/searchengine/searchen.aspx"
@@ -74,7 +75,12 @@ def updateEPICData(cur,cur2,db2):
                 db2.commit()
 
 
-
+if __name__ == "__main__":
+    db = db_conn.getConnection()
+    cur = db_conn.getCursor(db)
+    db2 = db_conn.getConnection()
+    cur2 = db_conn.getConnection(db2)
+    updateEPICData(cur,cur2,db2)
 
 
 
