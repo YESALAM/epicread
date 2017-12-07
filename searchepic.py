@@ -2,6 +2,7 @@ import requests
 import helpers
 from bs4 import BeautifulSoup
 import db_conn
+import fancy
 
 def searchEPIC(district,epicno):
     search_home = "http://164.100.196.163/searchengine/searchen.aspx"
@@ -47,13 +48,12 @@ def searchEPIC(district,epicno):
             age = tds[10].text
             gender = tds[11].text
             epic_no = tds[12].text
-            print(epic_no,electors_name_hindi)
+            #print(epic_no,electors_name_hindi)
 
             sql_update = "UPDATE `epic_data` SET `queried` = 1, `ac_no` = '"+ac_no+"', `part_no` = '"+part_no+"', `section_no` = '"+section_no+"', `serial_no` = '"+serial_no+"', `house_no` = '"+house_no+"', `electors_name` = '"+electors_name+"', `electors_name_hindi` = '"+electors_name_hindi+"', `relatives_name` = '"+relatives_name+"', `relatives_name_hindi` = '"+relatives_name_hindi+"', `dob` = '"+dob+"', `age` = '"+age+"', `gender` = '"+gender+"' WHERE `epic_data`.`epic_no` = '"+epic_no+"' "
 
             return sql_update
         except IndexError:
-            print("")
             return None
     return None
 
@@ -62,6 +62,14 @@ def updateEPICData(cur,cur2,db2):
     sql_fetch = "select epic_no,district from epic_data where queried = 0 and district='34'";
     cur.execute(sql_fetch)
     noOfRows = cur.rowcount
+    l = noOfRows
+    if noOfRows>0:
+        # Initial call to print 0% progress
+        print("Updating database by searching EPIC no")
+        fancy.printProgressBar(0, l, prefix='Download Progress:', suffix='Complete', length=50)
+
+    i = 1
+
     while True:
         row = cur.fetchone()
         if row == None:
@@ -70,9 +78,11 @@ def updateEPICData(cur,cur2,db2):
             epic_no = row[0]
             district = row[1]
             sql_update = searchEPIC(district, epic_no)
+            fancy.printProgressBar(i + 1, l, prefix='Download Progress:', suffix='Complete', length=50)
             if sql_update is not None:
                 cur2.execute(sql_update)
                 db2.commit()
+            i = i+1
 
 
 if __name__ == "__main__":
