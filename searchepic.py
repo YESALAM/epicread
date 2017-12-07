@@ -59,7 +59,7 @@ def searchEPIC(district,epicno):
 
 
 def updateEPICData(cur,cur2,db2):
-    sql_fetch = "select epic_no,district from epic_data where queried = 0 and district='34'";
+    sql_fetch = "select epic_no,district from epic_data where queried = 0 ";
     cur.execute(sql_fetch)
     noOfRows = cur.rowcount
     l = noOfRows
