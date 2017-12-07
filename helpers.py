@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import os
-
+import fancy
 
 def getOptions(options):
     dv = []
@@ -105,7 +105,7 @@ def getInputPart(psno_list,psname_list):
         l = input("Please input code for PartNo or -1 for all : ")
         try:
             d = int(l)
-            if d in psno_list:
+            if d in psno_list or (d == -1):
                 asmb_value = d
                 break
             else:
@@ -120,9 +120,10 @@ def printDownloadInfo(part_no,assembly_value,district_value):
 
 
 def downloadPdf(part_no,assembly_value,district_value,session):
-    printDownloadInfo(part_no,assembly_value,district_value)
+    #printDownloadInfo(part_no,assembly_value,district_value)
     pdf_url = "http://ceomadhyapradesh.nic.in/ViewVoterListSR2017.aspx?partno=" + part_no
     r = session.get(pdf_url)
+
 
     path = os.path.join('data', 'pdfs', district_value, assembly_value)
     if not os.path.exists(path):
@@ -131,4 +132,13 @@ def downloadPdf(part_no,assembly_value,district_value,session):
     file = os.path.join(path, part_no + '.pdf')
 
     with open(file, 'wb+') as f:
-        f.write(r.content)
+        total_length = int(r.headers.get('content-length'))
+        l = (total_length/1024)
+        dl = 0
+        fancy.printProgressBar(0, l, prefix='Downloading '+district_value+"/"+assembly_value+"/"+part_no+".pdf"+' Progress:', suffix='Complete', length=50)
+        for chunk in r.iter_content(chunk_size=1024):
+            dl += len(chunk)
+            f.write(chunk)
+            f.flush()
+            done = dl/1024
+            fancy.printProgressBar(done, l, prefix='Download '+district_value+"/"+assembly_value+"/"+part_no+".pdf"+' Progress:', suffix='Complete', length=50)
