@@ -79,7 +79,7 @@ if __name__ == "__main__":
     db = db_conn.getConnection()
     cur = db_conn.getCursor(db)
     db2 = db_conn.getConnection()
-    cur2 = db_conn.getConnection(db2)
+    cur2 = db_conn.getCursor(db2)
     updateEPICData(cur,cur2,db2)
 
 
