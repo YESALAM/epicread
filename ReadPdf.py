@@ -27,26 +27,26 @@ def extractEPIC(line):
 
 
 def saveEpic(file_path,district,cur):
-    file = open(file_path, 'rb')
-    pdfReader = PyPDF2.PdfFileReader(file)
-    nop = pdfReader.numPages
-    for i in range(0, nop):
-        cp = pdfReader.getPage(i)
-        str = cp.extractText()
-        for line in iter(str.splitlines()):
-            epic = extractEPIC(line)
-            if epic is not None:
-                print(epic)
-                sql_check = "select * from `epic_data` where `epic_no`='"+epic+"' and `queried`=1"
-                cur.execute(sql_check)
-                try:
-                    a = cur.fetchone()
-                    if a == None:
-                        sql_insert = "INSERT INTO `epic_data` ( `epic_no`, `district`) VALUES ( '" + epic + "', '" + district + "')"
-                        cur.execute(sql_insert)
+    with open(file_path,'rb') as file:
+        pdfReader = PyPDF2.PdfFileReader(file)
+        nop = pdfReader.numPages
+        for i in range(0, nop):
+            cp = pdfReader.getPage(i)
+            str = cp.extractText()
+            for line in iter(str.splitlines()):
+                epic = extractEPIC(line)
+                if epic is not None:
+                    print(epic)
+                    sql_check = "select * from `epic_data` where `epic_no`='" + epic + "' and `queried`=1"
+                    cur.execute(sql_check)
+                    try:
+                        a = cur.fetchone()
+                        if a == None:
+                            sql_insert = "INSERT INTO `epic_data` ( `epic_no`, `district`) VALUES ( '" + epic + "', '" + district + "')"
+                            cur.execute(sql_insert)
 
-                except:
-                    pass
+                    except:
+                        pass
 
 
 def readPdfs(cur,db):
